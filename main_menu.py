@@ -4,6 +4,7 @@ from time_tracker_functions import (
     stop_task,
     view_active_tasks,
     view_ended_tasks,
+    calculate_durations,
     export_to_csv,
 )
 from datetime import datetime
@@ -40,7 +41,8 @@ def main_menu():
         print("3. View Active Tasks")
         print("4. View Ended Tasks")
         print("5. Export Tasks to CSV")
-        print("6. Exit")
+        print("6. Calculate Task Durations")
+        print("7. Exit")
         choice = input("Choose an option: ")
 
         if choice == "1":
@@ -79,6 +81,10 @@ def main_menu():
             export_to_csv(filename)
 
         elif choice == "6":
+            calculate_durations()
+
+
+        elif choice == "7":
             print("Exiting the program. Goodbye!")
             break
 

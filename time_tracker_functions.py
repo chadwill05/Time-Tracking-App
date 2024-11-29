@@ -11,7 +11,8 @@ def init_db():
                 task_name TEXT,
                 category TEXT,
                 start_time TEXT,
-                end_time TEXT
+                end_time TEXT,
+                duration INTEGER
             )
         ''')
         conn.commit()
@@ -19,6 +20,19 @@ def init_db():
         print(f"Database error: {e}")
     finally:
         conn.close()
+
+#def update_schema():
+#    conn = sqlite3.connect("time_tracker.db")
+#    cursor = conn.cursor()
+#    # Check if the 'duration' column exists
+#    cursor.execute("PRAGMA table_info(tasks)")
+#    columns = [col[1] for col in cursor.fetchall()]
+#    if "duration" not in columns:
+#        # Add the 'duration' column
+#        cursor.execute("ALTER TABLE tasks ADD COLUMN duration INTEGER")
+#        print("Database schema updated: 'duration' column added.")
+#    conn.commit()
+#    conn.close()
 
 def start_task(task_name, category):
     """Start a new task by adding it to the database."""
@@ -106,3 +120,16 @@ def export_to_csv(filename="tasks.csv"):
         print(f"Error exporting to CSV: {e}")
     finally:
         conn.close()
+
+def calculate_durations():
+    conn = sqlite3.connect("time_tracker.db")
+    cursor = conn.cursor()
+    # Update the duration for tasks with an end_time
+    cursor.execute("""
+        UPDATE tasks
+        SET duration = CAST((JULIANDAY(end_time) - JULIANDAY(start_time)) * 24 * 60 AS INTEGER)
+        WHERE end_time IS NOT NULL AND duration IS NULL;
+    """)
+    conn.commit()
+    conn.close()
+    print("Durations calculated and updated.")
