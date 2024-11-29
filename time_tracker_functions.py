@@ -2,51 +2,107 @@ import sqlite3
 from datetime import datetime
 
 def init_db():
-    conn = sqlite3.connect("time_tracker.db")
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY,
-            task_name TEXT,
-            category TEXT,
-            start_time TEXT,
-            end_time TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY,
+                task_name TEXT,
+                category TEXT,
+                start_time TEXT,
+                end_time TEXT
+            )
+        ''')
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        conn.close()
 
 def start_task(task_name, category):
-    conn = sqlite3.connect("time_tracker.db")
-    cursor = conn.cursor()
-    start_time = datetime.now().isoformat()
-    cursor.execute("INSERT INTO tasks (task_name, category, start_time) VALUES (?, ?, ?)",
-                   (task_name, category, start_time))
-    conn.commit()
-    conn.close()
-    print(f"Started task: {task_name}")
+    """Start a new task by adding it to the database."""
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        start_time = datetime.now().isoformat()
+        cursor.execute("INSERT INTO tasks (task_name, category, start_time) VALUES (?, ?, ?)",
+                       (task_name, category, start_time))
+        conn.commit()
+        print(f"Started task: {task_name}")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        conn.close()
 
 def stop_task(task_id):
-    conn = sqlite3.connect("time_tracker.db")
-    cursor = conn.cursor()
-    end_time = datetime.now().isoformat()
-    cursor.execute("UPDATE tasks SET end_time = ? WHERE id = ?", (end_time, task_id))
-    conn.commit()
-    conn.close()
-    print(f"Stopped task with ID: {task_id}")
+    """Stop an active task by updating its end_time in the database."""
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        end_time = datetime.now().isoformat()
+        cursor.execute("UPDATE tasks SET end_time = ? WHERE id = ?", (end_time, task_id))
+        if cursor.rowcount == 0:
+            print(f"No active task found with ID: {task_id}")
+        else:
+            print(f"Stopped task with ID: {task_id}")
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        conn.close()
 
 def view_active_tasks():
-    conn = sqlite3.connect("time_tracker.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, task_name, category, start_time FROM tasks WHERE end_time IS NULL")
-    active_tasks = cursor.fetchall()
-    conn.close()
-    return active_tasks
+    """Fetch and return all active tasks (tasks without an end_time)."""
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, task_name, category, start_time FROM tasks WHERE end_time IS NULL")
+        active_tasks = cursor.fetchall()
+        return active_tasks
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
+    finally:
+        conn.close()
 
 def view_ended_tasks():
-    conn = sqlite3.connect("time_tracker.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, task_name, category, start_time, end_time FROM tasks WHERE end_time IS NOT NULL")
-    ended_tasks = cursor.fetchall()
-    conn.close()
-    return ended_tasks
+    """Fetch and return all ended tasks (tasks with an end_time)."""
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, task_name, category, start_time, end_time FROM tasks WHERE end_time IS NOT NULL")
+        ended_tasks = cursor.fetchall()
+        return ended_tasks
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
+    finally:
+        conn.close()
+
+def calculate_duration(start_time, end_time):
+    """Calculate the duration between start_time and end_time."""
+    start = datetime.fromisoformat(start_time)
+    end = datetime.fromisoformat(end_time)
+    duration = end - start
+    return duration
+
+def export_to_csv(filename="tasks.csv"):
+    """Export all tasks to a CSV file."""
+    try:
+        import csv
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, task_name, category, start_time, end_time FROM tasks")
+        tasks = cursor.fetchall()
+        with open(filename, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Task Name", "Category", "Start Time", "End Time"])
+            writer.writerows(tasks)
+        print(f"Tasks exported to {filename}")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    except Exception as e:
+        print(f"Error exporting to CSV: {e}")
+    finally:
+        conn.close()
