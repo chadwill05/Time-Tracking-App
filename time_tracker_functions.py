@@ -2,37 +2,46 @@ import sqlite3
 from datetime import datetime
 
 def init_db():
+    """Initialize the database and ensure the schema is up-to-date."""
     try:
         conn = sqlite3.connect("time_tracker.db")
         cursor = conn.cursor()
+        # Create tasks table if it doesn't exist
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY,
                 task_name TEXT,
                 category TEXT,
                 start_time TEXT,
-                end_time TEXT,
-                duration INTEGER
+                end_time TEXT
+                duration INTEGER,
             )
         ''')
+        conn.commit()
+        # Update schema to add 'duration' column
+        update_schema(conn)
+    except sqlite3.Error as e:
+        print(f"Database error during initialization: {e}")
+    finally:
+        conn.close()
+
+def update_schema():
+    """Add the 'duration' column if it doesn't exist."""
+    try:
+        conn = sqlite3.connect("time_tracker.db")
+        cursor = conn.cursor()
+        # Check if the 'duration' column exists
+        cursor.execute("PRAGMA table_info(tasks)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if "duration" not in columns:
+            # Add the 'duration' column
+            cursor.execute("ALTER TABLE tasks ADD COLUMN duration INTEGER")
+            print("Database schema updated: 'duration' column added.")
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     finally:
         conn.close()
-
-#def update_schema():
-#    conn = sqlite3.connect("time_tracker.db")
-#    cursor = conn.cursor()
-#    # Check if the 'duration' column exists
-#    cursor.execute("PRAGMA table_info(tasks)")
-#    columns = [col[1] for col in cursor.fetchall()]
-#    if "duration" not in columns:
-#        # Add the 'duration' column
-#        cursor.execute("ALTER TABLE tasks ADD COLUMN duration INTEGER")
-#        print("Database schema updated: 'duration' column added.")
-#    conn.commit()
-#    conn.close()
 
 def start_task(task_name, category):
     """Start a new task by adding it to the database."""
@@ -107,11 +116,13 @@ def export_to_csv(filename="tasks.csv"):
         import csv
         conn = sqlite3.connect("time_tracker.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT id, task_name, category, start_time, end_time FROM tasks")
+        # Include the 'duration' column in the query
+        cursor.execute("SELECT id, task_name, category, start_time, end_time, duration FROM tasks")
         tasks = cursor.fetchall()
         with open(filename, mode="w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["ID", "Task Name", "Category", "Start Time", "End Time"])
+            # Update header row to include 'Duration'
+            writer.writerow(["ID", "Task Name", "Category", "Start Time", "End Time", "Duration (minutes)"])
             writer.writerows(tasks)
         print(f"Tasks exported to {filename}")
     except sqlite3.Error as e:
@@ -120,6 +131,7 @@ def export_to_csv(filename="tasks.csv"):
         print(f"Error exporting to CSV: {e}")
     finally:
         conn.close()
+
 
 def calculate_durations():
     conn = sqlite3.connect("time_tracker.db")

@@ -1,5 +1,6 @@
 from time_tracker_functions import (
     init_db,
+    update_schema,
     start_task,
     stop_task,
     view_active_tasks,
