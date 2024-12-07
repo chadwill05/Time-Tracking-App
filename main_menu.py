@@ -37,8 +37,8 @@ def main_menu():
     init_db()
     while True:
         print("\nTime Tracker Menu Start")
-        print("1. Start Task")
-        print("2. Stop Task")
+        print("1. Start a Task")
+        print("2. Stop a Task")
         print("3. View Active Tasks")
         print("4. View Ended Tasks")
         print("5. Export Tasks to CSV")
