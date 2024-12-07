@@ -36,7 +36,7 @@ def display_ended_tasks(ended_tasks):
 def main_menu():
     init_db()
     while True:
-        print("\nTime Tracker Menu")
+        print("\nTime Tracker Menu Start")
         print("1. Start Task")
         print("2. Stop Task")
         print("3. View Active Tasks")
@@ -97,3 +97,5 @@ if __name__ == "__main__":
     main_menu()
 
 #commit
+
+#test commit
