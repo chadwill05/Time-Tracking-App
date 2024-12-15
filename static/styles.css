@@ -1,0 +1,252 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    /* Replace background image with gradient */
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    display: flex;
+    align-items: center;
+}
+
+/* Login Page Styles */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+}
+
+.welcome-section {
+    flex: 1;
+    padding: 20px;
+}
+
+.welcome-section h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.welcome-section p {
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.login-section {
+    flex: 1;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.sign-in-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #e65c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.sign-in-button:hover {
+    background-color: #ff6600;
+}
+
+.forgot-password {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.forgot-password a {
+    color: white;
+    text-decoration: none;
+}
+
+.terms {
+    margin-top: 20px;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+}
+
+.terms a {
+    color: white;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 10px;
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+/* Dashboard Styles */
+.dashboard-body {
+    background: #f4f4f4;
+    padding: 20px;
+    display: block;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.start-task form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.start-task input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+}
+
+button, .action-btn, .stop-btn, .logout-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.stop-btn {
+    background-color: #dc3545;
+}
+
+.logout-btn {
+    background-color: #6c757d;
+}
+
+.task-list {
+    display: grid;
+    gap: 10px;
+}
+
+.task-item {
+    background-color: white;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+button:hover, .action-btn:hover, .stop-btn:hover, .logout-btn:hover {
+    opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .welcome-section, .login-section {
+        max-width: 100%;
+    }
+    
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+}

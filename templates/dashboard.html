@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <header>
+            <h1>Time Tracker Dashboard</h1>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="start-task">
+            <h2>Start New Task</h2>
+            <form action="{{ url_for('start_new_task') }}" method="POST">
+                <input type="text" name="task_name" placeholder="Task Name" required>
+                <input type="text" name="category" placeholder="Category" required>
+                <button type="submit">Start Task</button>
+            </form>
+        </section>
+
+        <section class="active-tasks">
+            <h2>Active Tasks</h2>
+            {% if active_tasks %}
+                <div class="task-list">
+                    {% for task in active_tasks %}
+                    <div class="task-item">
+                        <span>ID: {{ task[0] }}</span>
+                        <span>Task: {{ task[1] }}</span>
+                        <span>Category: {{ task[2] }}</span>
+                        <span>Started: {{ task[3] }}</span>
+                        <a href="{{ url_for('stop_current_task', task_id=task[0]) }}" class="stop-btn">Stop</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No active tasks.</p>
+            {% endif %}
+        </section>
+
+        <section class="ended-tasks">
+            <h2>Ended Tasks</h2>
+            {% if ended_tasks %}
+                <div class="task-list">
+                    {% for task in ended_tasks %}
+                    <div class="task-item">
+                        <span>ID: {{ task[0] }}</span>
+                        <span>Task: {{ task[1] }}</span>
+                        <span>Category: {{ task[2] }}</span>
+                        <span>Duration: {{ task[3]|format_duration(task[4]) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No ended tasks.</p>
+            {% endif %}
+        </section>
+
+        <section class="actions">
+            <a href="{{ url_for('export_tasks') }}" class="action-btn">Export to CSV</a>
+            <a href="{{ url_for('calc_durations') }}" class="action-btn">Calculate Durations</a>
+        </section>
+    </div>
+</body>
+</html>

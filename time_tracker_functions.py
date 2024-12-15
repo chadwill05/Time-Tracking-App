@@ -13,13 +13,12 @@ def init_db():
                 task_name TEXT,
                 category TEXT,
                 start_time TEXT,
-                end_time TEXT
-                duration INTEGER,
+                end_time TEXT,
+                duration INTEGER
             )
-        ''')
+        ''')  # Removed the extra comma that was causing the syntax error
         conn.commit()
-        # Update schema to add 'duration' column
-        update_schema(conn)
+        print("Database initialized successfully")
     except sqlite3.Error as e:
         print(f"Database error during initialization: {e}")
     finally:
@@ -116,12 +115,10 @@ def export_to_csv(filename="tasks.csv"):
         import csv
         conn = sqlite3.connect("time_tracker.db")
         cursor = conn.cursor()
-        # Include the 'duration' column in the query
         cursor.execute("SELECT id, task_name, category, start_time, end_time, duration FROM tasks")
         tasks = cursor.fetchall()
         with open(filename, mode="w", newline="") as file:
             writer = csv.writer(file)
-            # Update header row to include 'Duration'
             writer.writerow(["ID", "Task Name", "Category", "Start Time", "End Time", "Duration (minutes)"])
             writer.writerows(tasks)
         print(f"Tasks exported to {filename}")
@@ -132,16 +129,19 @@ def export_to_csv(filename="tasks.csv"):
     finally:
         conn.close()
 
-
 def calculate_durations():
+    """Calculate and update durations for tasks."""
     conn = sqlite3.connect("time_tracker.db")
     cursor = conn.cursor()
-    # Update the duration for tasks with an end_time
-    cursor.execute("""
-        UPDATE tasks
-        SET duration = CAST((JULIANDAY(end_time) - JULIANDAY(start_time)) * 24 * 60 AS INTEGER)
-        WHERE end_time IS NOT NULL AND duration IS NULL;
-    """)
-    conn.commit()
-    conn.close()
-    print("Durations calculated and updated.")
+    try:
+        cursor.execute("""
+            UPDATE tasks
+            SET duration = CAST((JULIANDAY(end_time) - JULIANDAY(start_time)) * 24 * 60 AS INTEGER)
+            WHERE end_time IS NOT NULL AND duration IS NULL;
+        """)
+        conn.commit()
+        print("Durations calculated and updated.")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        conn.close()
